@@ -4,16 +4,16 @@ import User from "../models/user.models";
 import { connectToDB } from "../mongoose";
 
 // Define the interface for user creation
-interface Props {
+interface Params {
   username: string;
   email: string;
   password: string;
 }
 
 // Create a user with error handling
-export async function createUser({ username, email, password }: Props): Promise<void> {
+export async function createUser({ username, email, password }: Params): Promise<void> {
   try {
-    // Connect to the database
+    // Connect to the database   
     await connectToDB();
 
     // Check if the user already exists
@@ -25,6 +25,7 @@ export async function createUser({ username, email, password }: Props): Promise<
     // Create a new user
     const newUser = new User({ username, email, password });
     await newUser.save();
+    
   } catch (error: any) {
     // Handle errors
     throw new Error(`Error creating user: ${error.message}`);
