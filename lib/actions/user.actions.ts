@@ -38,3 +38,19 @@ export const createUser = async (formData: any) => {
     return { error: `Error creating user: ${error.message}`, status: 500 };
   }
 };
+
+
+export async function fetchUser(_id: string) {
+    try {
+        await connectToDB();
+        const user = await User.findById(_id);
+
+        if (user) {
+            return { user, message: 'User found', status: 200 };
+        } else {
+            return { error: 'User not found', status: 404 };
+        }
+    } catch (err: any) {
+        throw new Error(`Failed to fetch user: ${err.message}`);
+    }
+}
