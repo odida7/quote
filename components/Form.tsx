@@ -14,7 +14,7 @@ export default function Form() {
       email: formData.get('email'),
       password: formData.get('password'),
       redirect: false,
-    });
+    });    
 
 
     if (response?.error) {

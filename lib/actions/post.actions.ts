@@ -4,24 +4,29 @@ import Post from "../models/post.models";
 import User from "../models/user.models";
 import { connectToDB } from "../mongoose";
 
-interface Params {
-    text: string;
-    userId: string;
-    createdAt: Date;
-}
-
-export async function createPost({ text, userId, createdAt }: Params) {
+export async function createPost(formData: any, userId: string) {
+    const { text } = formData;
     try {
         await connectToDB();
-        // Use Post.create directly, which creates and saves the document
-        const author = await User.findById(userId)
-
-        if(author){
-          await Post.create({ text, userId, createdAt });
-        }
         
+        // Find the author (user) based on the provided userId
+        const author = await User.findById(userId);
 
-        return { message: 'Post has been created successfully.', status: 200 };
+        if (author) {
+            // Create a new post document
+            const newPost = new Post({ text });
+
+            // Set the author field to the user ID
+            newPost.user = author._id;
+
+            // Save the new post
+            await newPost.save();
+            
+            return { message: 'Post has been created successfully.', status: 200 };
+        } else {
+            // If the author (user) is not found, respond with an error
+            return { error: 'Author not found.', status: 404 };
+        }
     } catch (err: any) {
         console.error(`Error creating post: ${err.message}`);
         // Respond with an error message
@@ -30,29 +35,6 @@ export async function createPost({ text, userId, createdAt }: Params) {
 }
 
 
-
-/////////////////////fetch post
-/*
-export async function fetchPost(pageNumber = 1, pageSize = 20){
-   try {
-    await connectToDB();
-    //calculate the number of posts to skip base on page size and page number
-    const skipAmount = (pageNumber - 1) * pageSize;
-  
-    const post = await Post.find()
-    .sort({ createdAt: 'desc'})
-    .skip(skipAmount)
-    .limit(pageSize)
-    
-    return { post, message: 'success', status: 200 };
-
-   }catch (err: any){
-       console.error(`Error fetching post: ${err.message}`);
-        // Respond with an error message
-        return { error: `Error fetching post: ${err.message}`, status: 500 };
-   }
-}
-*/
 
 
 export async function fetchPost(pageNumber = 1, pageSize = 20) {

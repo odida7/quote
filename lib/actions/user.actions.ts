@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 // Create a user with error handling
 export const createUser = async (formData: any) => {
-  const { username, email, password } = formData;
+  const { name, email, password } = formData;
   try {
     // Connect to the database
     await connectToDB();
@@ -22,7 +22,7 @@ export const createUser = async (formData: any) => {
 
     // Create a new user
     const newUser = new User({
-      username,
+      name,
       email,
       password: hashedPassword,
     });
@@ -53,4 +53,4 @@ export async function fetchUser(_id: string) {
     } catch (err: any) {
         throw new Error(`Failed to fetch user: ${err.message}`);
     }
-}
+}   

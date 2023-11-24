@@ -9,7 +9,7 @@ const Signup = () => {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    username: '',
+    name: '',  
     email: '',
     password: '',
   });
@@ -35,7 +35,7 @@ const Signup = () => {
 
       // Clear the form fields after successful registration
       setFormData({
-        username: '',
+        name: '',
         email: '',
         password: '',
       });
@@ -53,10 +53,10 @@ const Signup = () => {
         >
           <input
             type='text'
-            name='username'
+            name='name'
             placeholder='Username'
             required
-            value={formData.username}
+            value={formData.name}
             onChange={handleChange}
             className='m-4 border-b-2 p-2 bg-transparent outline-none'
           />
