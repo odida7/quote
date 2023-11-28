@@ -6,10 +6,21 @@ import { useRouter } from 'next/navigation';
 import React, { FormEvent, useState } from 'react'
 
 interface Props {
+  text: string;
   userId: string;
+  createdAt: Date;
+  _id: string;
 }
 
-export default function CreatePost({userId}: Props) {
+ /*
+ interface Session {
+    user: {
+      address: string
+    }
+  }
+*/
+
+export default function CreatePost({text, userId, createdAt, _id}: Props) {
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -17,8 +28,8 @@ export default function CreatePost({userId}: Props) {
     router.replace("/login");
   }
 
-  //const userId = session?.user?._id;
-  //console.log('id:', userId);
+  const user = session?.user?._id;
+  console.log('id:', user);
   
   const [formData, setFormData] = useState({
     text: '',
@@ -30,15 +41,21 @@ export default function CreatePost({userId}: Props) {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [e.target.name]: e.target.value,
+     // _id: userId,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      if (userId) {
+     if (user){
+
         setLoading(true);
-        const res = await createPost(formData, userId);
+        const res = await createPost({
+          userId: user,   
+          text: formData.text, 
+          createdAt: new Date(),
+        });
         if (res.status === 200) {
           // Clear the form and reset state
           setFormData({ text: '' });
@@ -47,7 +64,7 @@ export default function CreatePost({userId}: Props) {
         } else {
           setError('Failed to create post. Please try again.');
         }
-      }
+    }
     } catch (error: any) {
       setError(`Error creating post: ${error.message}`);
     } finally {

@@ -1,41 +1,48 @@
 'use server'
 
+
 import Post from "../models/post.models";
 import User from "../models/user.models";
 import { connectToDB } from "../mongoose";
 
-export async function createPost(formData: any, userId: string) {
-    const { text } = formData;
-    try {
-        await connectToDB();
-        
-        // Find the author (user) based on the provided userId
-        const author = await User.findById(userId);
+interface Params {
+  text: string;
+  userId: string;
+  createdAt: Date;
+}
 
-        if (author) {
-            // Create a new post document
-            const newPost = new Post({ text });
+export async function createPost({ text, userId, createdAt }: Params) {
+  try {
+    await connectToDB();
 
-            // Set the author field to the user ID
-            newPost.user = author._id;
+    // Find the author (user) based on the provided userId
+    const author = await User.findById({_id: userId}, { userId: 1 });
+    console.log('userId:', author)
 
-            // Save the new post
-            await newPost.save();
-            
-            return { message: 'Post has been created successfully.', status: 200 };
-        } else {
-            // If the author (user) is not found, respond with an error
-            return { error: 'Author not found.', status: 404 };
-        }
-    } catch (err: any) {
-        console.error(`Error creating post: ${err.message}`);
-        // Respond with an error message
-        return { error: `Error creating post: ${err.message}`, status: 500 };
+    if(author){
+      // Create a new post document
+      const newPost = new Post({ text, userId: author, createdAt });
+
+      // Set the author field to the user ID
+      //newPost.user = author._id;
+
+      // Save the new post
+      await newPost.save();
+
+      return { message: 'Post has been created successfully.', status: 200 };
+    } else {
+      // If the author (user) is not found, respond with an error
+      return { error: 'Author not found.', status: 404 };
     }
+  } catch (err: any) {
+    console.error(`Error creating post: ${err.message}`);
+    // Respond with an error message
+    return { error: `Error creating post: ${err.message}`, status: 500 };
+  }
 }
 
 
-
+//////////////////fetch post
 
 export async function fetchPost(pageNumber = 1, pageSize = 20) {
     try {
