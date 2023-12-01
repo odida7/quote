@@ -8,7 +8,7 @@ import { connectToDB } from "../mongoose";
 interface Params {
   text: string;
   userId: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export async function createPost({ text, userId, createdAt }: Params) {
